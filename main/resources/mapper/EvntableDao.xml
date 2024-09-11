@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chinasofti.prjboothmdemo.dao.EvntableDao">
+
+    <resultMap id="BaseResultMap" type="com.chinasofti.prjboothmdemo.entity.Evntable">
+        <!--@Table evntable-->
+        <result property="eid" column="eid" jdbcType="INTEGER"/>
+        <result property="etype" column="etype" jdbcType="VARCHAR"/>
+        <result property="val" column="val" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          eid, etype, val, note
+        from envtable
+        where eid = #{eid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          eid, etype, val, note
+        from envtable
+        <where>
+            <if test="eid != null">
+                and eid = #{eid}
+            </if>
+            <if test="etype != null and etype != ''">
+                and etype = #{etype}
+            </if>
+            <if test="val != null and val != ''">
+                and val = #{val}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          eid, etype, val, note
+        from envdb.envtable
+    </select>    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from evntable
+        <where>
+            <if test="eid != null">
+                and eid = #{eid}
+            </if>
+            <if test="etype != null and etype != ''">
+                and etype = #{etype}
+            </if>
+            <if test="val != null and val != ''">
+                and val = #{val}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+        </where>
+    </select>
+    <select id="findGroupVlaue" resultType="java.util.Map">
+        SELECT etype ,ROUND(AVG(val),2) enval FROM envtable GROUP BY etype
+    </select>
+
+    <select id="findLastWendu" resultType="Float">
+        SELECT val FROM envtable WHERE etype = '温度' ORDER BY eid DESC LIMIT 10;
+    </select>
+
+    <select id="findLastShidu" resultType="Float">
+        SELECT val FROM envtable WHERE etype = '湿度' ORDER BY eid DESC LIMIT 10;
+    </select>
+
+    <select id="findLastQiwei" resultType="Float">
+        SELECT val FROM envtable WHERE etype = '气味' ORDER BY eid DESC LIMIT 10;
+    </select>
+
+    <select id="findRightnow" resultType="Float">
+        SELECT val FROM envtable ORDER BY eid DESC LIMIT 4;
+    </select>
+
+    <select id="findLastGuangqiang" resultType="Float">
+        SELECT val FROM envtable WHERE etype = '光强' ORDER BY eid DESC LIMIT 10;
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="eid" useGeneratedKeys="true">
+        insert into envtable(etype, val, note)
+        values (#{etype}, #{val}, #{note})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="eid" useGeneratedKeys="true">
+        insert into envtable(etype, val, note)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.etype}, #{entity.val}, #{entity.note})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="eid" useGeneratedKeys="true">
+        insert into envtable(etype, val, note)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.etype}, #{entity.val}, #{entity.note})
+        </foreach>
+        on duplicate key update
+        etype = values(etype),
+        val = values(val),
+        note = values(note)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update envtable
+        <set>
+            <if test="etype != null and etype != ''">
+                etype = #{etype},
+            </if>
+            <if test="val != null and val != ''">
+                val = #{val},
+            </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+        </set>
+        where eid = #{eid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from envtable where eid = #{eid}
+    </delete>
+
+</mapper>
+

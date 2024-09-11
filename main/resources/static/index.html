@@ -1,0 +1,611 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=pie-simple
+-->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+    <script src="jquery-1.9.1.js"></script>
+    <script src="click.js"></script>
+    <script src="comment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/themes/default.min.css" />
+    <style>
+        .level1{
+            display: flex; /* 使用 flex 布局 */
+            justify-content: space-between;
+            height: 100%; /* 容器高度 */
+            width: 100%;
+        }
+        .container {
+            display: flex; /* 使用 flex 布局 */
+            justify-content: space-between;
+            height: 100%; /* 容器高度 */
+            width: 60%;
+        }
+        .box {
+            flex: 1; /* 让每个 div 均分剩余空间 */
+            background-color: #f0f0f0; /* 背景色 */
+        }
+        .level2{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+        }
+        .level3{
+            display: flex; /* 使用 flex 布局 */
+            justify-content: space-between;
+            height: 60%; /* 容器高度 */
+            width: 100%;
+        }
+        .button{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 20%;
+        }
+        .zhe_button{
+            margin: 5px;
+            padding: 10px 20px;
+        }
+        .show_part{
+            height: 10%;
+            display: flex; /* 使用 flex 布局 */
+            justify-content: space-between;
+
+        }
+        .showbox{
+            height: 60px;
+            width: 70%;
+        }
+        .show_button{
+            height: 50px;
+            width: 30%;
+        }
+        .yvzhi{
+
+        }
+    </style>
+</head>
+
+
+
+<body style="height: 100%; margin: 0">
+<div class="level1">
+    <div class="container">
+        <div class="box" id="test" ></div>
+    </div>
+
+    <div class="level2">
+        <div class="level3">
+            <div id="zhexian" style="height: 100%; width: 80%"></div>
+            <div class="button">
+
+                <button id="show_wendu_zhexian" class="zhe_button">展示前十次温度记录</button>
+                <button id="show_shidu_zhexian" class="zhe_button">展示前十次湿度记录</button>
+                <button id="show_qiwei_zhexian" class="zhe_button">展示前十次气味记录</button>
+                <button id="show_guangqiang_zhexian" class="zhe_button">展示前十次光强记录</button>
+            </div>
+        </div>
+        <div class="show_part">
+            <textarea class="showbox" id="show_box" readonly>
+            </textarea>
+
+            <button class="show_button" id="show_button">查询实时数据</button>
+        </div>
+        <div style="height: 50px">
+            <button id="button" style="vertical-align:middle">将当前数据显示在Oled屏幕中</button>
+        </div>
+
+        <div>
+            <div class="yvzhi">
+                <input id="wenduyvzhi">
+                <button id="wendu_yvzhi">设置新的温度阈值</button>
+                <button id="jiangwen_button">降温</button>
+            </div>
+            <div class="yvzhi">
+                <input id="shiduyvzhi">
+                <button id="shidu_yvzhi">设置新的湿度阈值</button>
+                <button id="jiashi_button">加湿</button>
+            </div>
+            <div class="yvzhi">
+                <input id="qiweiyvzhi">
+                <button id="qiwei_yvzhi">设置新的气味阈值</button>
+                <button id="huanqi_button">换气</button>
+            </div>
+            <div class="yvzhi">
+                <input id="guangqiangyvzhi">
+                <button id="guangqiang_yvzhi">设置新的光强阈值</button>
+                <button id="zheguang_button">遮光</button>
+                <button id="buguang_button">补光</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.0/files/dist/echarts.min.js"></script>
+
+<script type="text/javascript">
+    //使用jquery访问服务器
+    document.getElementById('button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"xianshi"});
+    });
+
+
+    // 手动控制
+    document.getElementById('jiangwen_button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"wendu"});
+    });
+
+    document.getElementById('jiashi_button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"shidu"});
+    });
+
+    document.getElementById('huanqi_button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"qiwei"});
+    });
+
+
+    // 设定阈值
+    document.getElementById('wendu_yvzhi').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById("wenduyvzhi");
+        $.get("click_send", {param:"yvzhiwendu"+dom.value});
+    });
+
+    document.getElementById('shidu_yvzhi').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById("shiduyvzhi");
+        $.get("click_send", {param:"yvzhishidu"+dom.value});
+    });
+
+    document.getElementById('qiwei_yvzhi').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById("qiweiyvzhi");
+        $.get("click_send", {param:"yvzhiqiwei"+dom.value});
+    });
+
+    document.getElementById('guangqiang_yvzhi').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById("guangqiangyvzhi");
+        $.get("click_send", {param:"yvzhiguangqiang"+dom.value});
+    });
+
+    document.getElementById('zheguang_button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"zheguang"});
+    });
+
+    document.getElementById('buguang_button').addEventListener('click', function() {
+        // 发送请求到后端
+        $.get("click_send", {param:"buguang"});
+    });
+
+
+    document.getElementById('show_wendu_zhexian').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById('zhexian');
+        setTimeout(function() {
+        $.getJSON("show_wendu", function (data) {
+
+
+            var myChart = echarts.init(dom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false
+            });
+
+            var xAxisData = []; // X 轴数据，单纯递增
+            for (var i = 1; i <= data.length; i++) {
+                xAxisData.push(i); // 将递增的数字作为 X 轴数据
+            }
+
+            // 将原始数据转换为 ECharts 所需的格式
+            var formattedData = data.map(function(value, index) {
+                return {
+                    name: '数据点' + (index + 1), // 设置数据点的名称，可以根据需求修改
+                    value: value // 设置数据点的值
+                };
+            });
+
+            var option = {
+                title: {
+                    text: '温度折线图',
+                    subtext: '数据分析结果',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xAxisData // X 轴数据
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 27,
+                    max: 42
+                },
+                series: [{
+                    data: formattedData, // 转换后的数据
+                    type: 'line',
+                    smooth: true // 是否平滑曲线
+                }]
+            };
+
+            myChart.setOption(option);
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+    }, 0);
+    });
+
+    document.getElementById('show_shidu_zhexian').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById('zhexian');
+        setTimeout(function() {
+            $.getJSON("show_shidu", function (data) {
+
+
+                var myChart = echarts.init(dom, null, {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+
+                var xAxisData = []; // X 轴数据，单纯递增
+                for (var i = 1; i <= data.length; i++) {
+                    xAxisData.push(i); // 将递增的数字作为 X 轴数据
+                }
+
+                // 将原始数据转换为 ECharts 所需的格式
+                var formattedData = data.map(function(value, index) {
+                    return {
+                        name: '数据点' + (index + 1), // 设置数据点的名称，可以根据需求修改
+                        value: value // 设置数据点的值
+                    };
+                });
+
+                var option = {
+                    title: {
+                        text: '湿度折线图',
+                        subtext: '数据分析结果',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xAxisData // X 轴数据
+                    },
+                    yAxis: {
+                        type: 'value',
+                        min: 25,
+                        max: 60
+                    },
+                    series: [{
+                        data: formattedData, // 转换后的数据
+                        type: 'line',
+                        smooth: true // 是否平滑曲线
+                    }]
+                };
+
+                myChart.setOption(option);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                });
+            });
+        }, 0);
+    });
+
+    document.getElementById('show_qiwei_zhexian').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById('zhexian');
+        dom.style.display = 'block'; // 显示 div
+        setTimeout(function() {
+            $.getJSON("show_qiwei", function (data) {
+
+
+                var myChart = echarts.init(dom, null, {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+
+                var xAxisData = []; // X 轴数据，单纯递增
+                for (var i = 1; i <= data.length; i++) {
+                    xAxisData.push(i); // 将递增的数字作为 X 轴数据
+                }
+
+                // 将原始数据转换为 ECharts 所需的格式
+                var formattedData = data.map(function(value, index) {
+                    return {
+                        name: '数据点' + (index + 1), // 设置数据点的名称，可以根据需求修改
+                        value: value // 设置数据点的值
+                    };
+                });
+
+                var option = {
+                    title: {
+                        text: '气味折线图',
+                        subtext: '数据分析结果',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xAxisData // X 轴数据
+                    },
+                    yAxis: {
+                        type: 'value',
+                        min: 300,
+                        max: 1300
+                    },
+                    series: [{
+                        data: formattedData, // 转换后的数据
+                        type: 'line',
+                        smooth: true // 是否平滑曲线
+                    }]
+                };
+
+                myChart.setOption(option);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                });
+            });
+        }, 0);
+    });
+
+    document.getElementById('show_guangqiang_zhexian').addEventListener('click', function() {
+        // 发送请求到后端
+        var dom = document.getElementById('zhexian');
+        dom.style.display = 'block'; // 显示 div
+        setTimeout(function() {
+            $.getJSON("show_guangqiang", function (data) {
+
+
+                var myChart = echarts.init(dom, null, {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+
+                var xAxisData = []; // X 轴数据，单纯递增
+                for (var i = 1; i <= data.length; i++) {
+                    xAxisData.push(i); // 将递增的数字作为 X 轴数据
+                }
+
+                // 将原始数据转换为 ECharts 所需的格式
+                var formattedData = data.map(function(value, index) {
+                    return {
+                        name: '数据点' + (index + 1), // 设置数据点的名称，可以根据需求修改
+                        value: value // 设置数据点的值
+                    };
+                });
+
+                var option = {
+                    title: {
+                        text: '光强折线图',
+                        subtext: '数据分析结果',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xAxisData // X 轴数据
+                    },
+                    yAxis: {
+                        type: 'value',
+                        min: 100,
+                        max: 1100
+                    },
+                    series: [{
+                        data: formattedData, // 转换后的数据
+                        type: 'line',
+                        smooth: true // 是否平滑曲线
+                    }]
+                };
+
+                myChart.setOption(option);
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                });
+            });
+        }, 0);
+    });
+
+    $.getJSON("show_shidu", function (data) {
+        var dom = document.getElementById('zhexian');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+                useDirtyRect: false
+            });
+
+            var xAxisData = []; // X 轴数据，单纯递增
+            for (var i = 1; i <= data.length; i++) {
+                xAxisData.push(i); // 将递增的数字作为 X 轴数据
+            }
+
+            // 将原始数据转换为 ECharts 所需的格式
+            var formattedData = data.map(function(value, index) {
+                return {
+                    name: '数据点' + (index + 1), // 设置数据点的名称，可以根据需求修改
+                    value: value // 设置数据点的值
+                };
+            });
+
+            var option = {
+                title: {
+                    text: '湿度折线图',
+                    subtext: '数据分析结果',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xAxisData // X 轴数据
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 25,
+                    max: 60
+                },
+                series: [{
+                    data: formattedData, // 转换后的数据
+                    type: 'line',
+                    smooth: true // 是否平滑曲线
+                }]
+            };
+
+            myChart.setOption(option);
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+
+    document.getElementById('show_button').addEventListener('click', function() {
+        // 发送请求到后端
+
+        var dom = document.getElementById("show_box");
+        $.getJSON("show_rightnow", function (data) {
+            dom.value = "温度: "+String(data[3])+"\n湿度: "+String(data[2])+"\n气味: "+String(data[1])+"\n光强: "+String(data[0]);
+            var wenduM = "温度: " + String(data[3]) + "&nbsp &nbsp(建议范围25°C~35°C)<br>";
+            var shiduM = "湿度: " + String(data[2]) + "&nbsp &nbsp(建议范围30~50)<br>";
+            var qiweiM = "气味: " + String(data[1]) + "&nbsp &nbsp(建议范围250~600)<br>";
+            var guangqiangM = "光强: " + String(data[0]) + "&nbsp &nbsp(建议范围200~600)<br>";
+            var message = "<strong>当前的实时数据为</strong><br>" + wenduM + shiduM + qiweiM + guangqiangM;
+
+            var recom = comment(data[3], data[2], data[1], data[0]);
+
+            var feihua = "在大棚种植中，维持适宜的温度、湿度、气味和光照对作物生长至关重要。适宜的温度可以促进作物的生长速度，提高养分吸收效率，并减少病虫害的发生率。恰当的湿度有助于维持作物细胞的水分平衡，促进生长，同时防止蒸腾过度造成的水分流失。控制气味可以影响作物的新陈代谢和呼吸作用，维持空气清新有利于作物健康。光照是植物进行光合作用的重要因素，提供足够的光照能够增加光合产物的合成，促进作物生长发育。请实时关注大棚内的环境状况";
+            // 使用alert()函数弹出提示框
+
+            message = message + "<br>" + recom + "<br>" + feihua;
+            alertify.alert("<strong>实时分析</strong>", message);
+        })
+
+    });
+
+    // $.getJSON("findGroupVlaue_Evntable",function (listmap) {
+    //     var dom = document.getElementById('test');
+    //     var myChart = echarts.init(dom, null, {
+    //         renderer: 'canvas',
+    //         useDirtyRect: false
+    //     });
+    //
+    //     var option;
+    //
+    //     option = {
+    //         title: {
+    //             text: '环境数据温湿度和气味分布饼图',
+    //             subtext: '数据分析结果',
+    //             left: 'center'
+    //         },
+    //         tooltip: {
+    //             trigger: 'item'
+    //         },
+    //         legend: {
+    //             orient: 'vertical',
+    //             left: 'left'
+    //         },
+    //         series: [
+    //             {
+    //                 name: '环境数据饼形图',
+    //                 type: 'pie',
+    //                 radius: '50%',
+    //                 data: listmap,
+    //                 emphasis: {
+    //                     itemStyle: {
+    //                         shadowBlur: 10,
+    //                         shadowOffsetX: 0,
+    //                         shadowColor: 'rgba(0, 0, 0, 0.5)'
+    //                     }
+    //                 }
+    //             }
+    //         ]
+    //     };
+    //
+    //
+    //     if (option && typeof option === 'object') {
+    //         myChart.setOption(option);
+    //     }
+    //
+    //     window.addEventListener('resize', myChart.resize);
+    // })
+
+
+    $.getJSON("findGroupVlaue_Evntable",function (listmap) {
+        var dom = document.getElementById('test');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+
+        var option;
+
+        option = {
+            title: {
+                text: '环境数据温湿度和气味分布柱状图',
+                subtext: '数据分析结果',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            xAxis: {
+                type: 'category',
+                data: ['温度', '湿度', '气味', '光强']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '温度湿度气味和光强历史平均值',
+                    type: 'bar',
+                    data: listmap,
+                    emphasis: {
+                        focus: 'series'
+                    }
+                }
+            ]
+        };
+
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    })
+
+
+    $.getJSON("show_rightnow", function (data) {
+        var dom = document.getElementById("show_box");
+        dom.value = "温度: "+String(data[3])+"\n湿度: "+String(data[2])+"\n气味: "+String(data[1])+"\n光强: "+String(data[0]);
+    })
+
+
+
+
+</script>
+</body>
+</html>

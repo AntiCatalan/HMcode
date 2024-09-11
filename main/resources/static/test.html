@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>点击显示网页消息提示框</title>
+</head>
+<body>
+
+<button onclick="showMessage()">点击显示消息</button>
+
+<script>
+function showMessage() {
+    // 在弹出框中显示网页消息
+    var message = "<h2>Welcome!</h2><p>This is a message displayed in an alert box.</p>";
+    // 使用alert()函数弹出提示框
+    alertify.alert(message);
+}
+</script>
+
+<!-- 引入 alertify.js 库 -->
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/themes/default.min.css" />
+
+</body>
+</html>
